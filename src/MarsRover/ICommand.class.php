@@ -1,7 +1,12 @@
 <?php
+
 namespace MarsRover;
 
-interface ICommand
-{
-    public function doCommand( Rover $rover );
+interface ICommand {
+
+    /**
+     * 
+     * @param \MarsRover\Rover $rover
+     */
+    public function doCommand(Rover $rover);
 }

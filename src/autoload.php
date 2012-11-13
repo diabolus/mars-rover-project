@@ -1,4 +1,5 @@
 <?php
+
 function autoload($className)
 {
     $className = ltrim($className, '\\');
