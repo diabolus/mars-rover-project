@@ -1,39 +1,23 @@
 <?php
 
-namespace MarsRover\RoverStates;
+namespace MarsRover\Validators;
 
-class EastState implements \MarsRover\ICardinalDirectionState {
+class DestinationCoordinatesValidator implements \MarsRover\IValidator {
 
-    /**
-     * 
-     * @param \MarsRover\Rover $rover
-     */
-    public function handleMoveForward(\MarsRover\Rover $rover) {
-        $rover->setX($rover->getX() + \MarsRover\Rover::replacement);
+    private $__area;
+
+    public function __construct(\MarsRover\Area $area) {
+        $this->__area = $area;
     }
 
-    /**
-     * 
-     * @param \MarsRover\Rover $rover
-     */
-    public function handleTurnLeft(\MarsRover\Rover $rover) {
-        $rover->setDirectionState(new NorthState());
-    }
-
-    /**
-     * 
-     * @param \MarsRover\Rover $rover
-     */
-    public function handleTurnRight(\MarsRover\Rover $rover) {
-        $rover->setDirectionState(new SouthState());
-    }
-
-    /**
-     * 
-     * @return strıng
-     */
-    public function __toString() {
-        return "East";
+    public function isValid(\MarsRover\MarsCoordinate $destCoor) {
+        if (
+                ( $destCoor->getX() <= $this->__area->getX2() && $destCoor->getX() >= 0 ) && ( $destCoor->getY() <= $this->__area->getY2() && $destCoor->getY() >= 0 )
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

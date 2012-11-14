@@ -14,29 +14,55 @@ namespace MarsRover;
  */
 class Rover {
 
+    const ROVER_NOT_LANDED = 0;
+    const ROVER_LANDED = 1;
+    const replacement = 1;
+    
     private $__x;
     private $__y;
-    private $area;
+    private $__area;
     private $__directionState;
     private $__commandQueue;
-
-    const replacement = 1;
+    private $__validator;
+    private $__roverStatus = self::ROVER_NOT_LANDED;
+   
 
     /**
      * 
-     * @param type $__x
-     * @param type $__y
+     * @param \MarsRover\MarsCoordinate $landingCoor
      * @param \MarsRover\ICardinalDirectionState $__directionState
      * @param type $commandSequence
      * @param \MarsRover\Area $area
      */
-    public function __construct($__x, $__y, \MarsRover\ICardinalDirectionState $__directionState, $commandSequence, Area $area) {
-
-        $this->setX($__x);
-        $this->setY($__y);
+    
+    public function __construct(\MarsRover\MarsCoordinate $landingCoor, \MarsRover\ICardinalDirectionState $__directionState, $commandSequence, \MarsRover\Area $area) {
+        $this->setArea($area);
+        $this->__validator = new \MarsRover\Validators\DestinationCoordinatesValidator($this->__area);
+        $this->__landRover($landingCoor);
         $this->setDirectionState($__directionState);
         $this->setCommandQueue(\MarsRover\CommandQueueFactory::build($commandSequence));
-        $this->setArea($area);
+    }
+    
+    /**
+     * Landing function to destination Coordinates on area
+     * 
+     * @param type $__x
+     * @param type $__y
+     * @throws \OutOfRangeException
+     */
+    private function __landRover($landingCoor){
+        
+        if($this->getRoverStatus() == self::ROVER_LANDED)
+            throw new \LogicException(sprintf("Rover has already landed!!!"));
+            
+        if ( $this->__validator->isValid($landingCoor)) {
+            $this->setX($landingCoor->getX());
+            $this->setY($landingCoor->getY());
+            // Rover has landed successfully
+            $this->setRoverStatus(self::ROVER_LANDED);
+        } else {
+            throw new \OutOfRangeException(sprintf("[%d,%d] landing destination is out of area", $landingCoor->getX(), $landingCoor->getY()));
+        }
     }
 
     /**
@@ -69,6 +95,14 @@ class Rover {
      */
     public function getCommandQueue() {
         return $this->__commandQueue;
+    }
+    
+    public function getRoverStatus() {
+        return $this->__roverStatus;
+    }
+
+    public function setRoverStatus($__roverStatus) {
+        $this->__roverStatus = $__roverStatus;
     }
 
     /**
@@ -108,7 +142,7 @@ class Rover {
      * @return type
      */
     public function getArea() {
-        return $this->area;
+        return $this->__area;
     }
 
     /**
@@ -116,7 +150,7 @@ class Rover {
      * @param type $area
      */
     public function setArea($area) {
-        $this->area = $area;
+        $this->__area = $area;
     }
 
     /**
@@ -135,8 +169,17 @@ class Rover {
         return sprintf('Current Heading Direction : %s ', $this->getDirectionState());
     }
 
+    public function calculateDestinationCoordinates(){
+        return $this->__directionState->handleMoveForward($this);
+    }
+    
     public function moveForward() {
-        $this->__directionState->handleMoveForward($this);
+        $destCoor = $this->calculateDestinationCoordinates();
+        if ( $this->__validator->isValid($destCoor)){
+            $this->setX($destCoor->getX());
+            $this->setY($destCoor->getY());
+        } 
+        // in else case rover ignore the invalid command 
     }
 
     public function turnLeft() {
@@ -148,7 +191,12 @@ class Rover {
     }
 
     public function executeCommands() {
-        $this->__commandQueue->execute($this);
+        if ( $this->getRoverStatus() == self::ROVER_LANDED ){
+           $this->__commandQueue->execute($this); 
+        } else {
+           throw new \LogicException(sprintf("Rover is not landed yet.")); 
+        }
+        
     }
 
 }

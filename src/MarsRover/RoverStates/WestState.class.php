@@ -9,7 +9,7 @@ class WestState implements \MarsRover\ICardinalDirectionState {
      * @param \MarsRover\Rover $rover
      */
     public function handleMoveForward(\MarsRover\Rover $rover) {
-        $rover->setX($rover->getX() - \MarsRover\Rover::replacement);
+        return new \MarsRover\MarsCoordinate($rover->getX() - \MarsRover\Rover::replacement,$rover->getY());
     }
 
     /**

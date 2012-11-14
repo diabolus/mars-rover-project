@@ -18,7 +18,7 @@ class BasicRoverTest extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->_initState = new \MarsRover\RoverStates\NorthState();
-        $this->_rover = new \MarsRover\Rover(0, 0, $this->_initState , "", new \MarsRover\Area(5, 5));
+        $this->_rover = new \MarsRover\Rover(new \MarsRover\MarsCoordinate(0, 0), $this->_initState , "", new \MarsRover\Area(5, 5));
     }
     public function tearDown() {
         unset($this->_rover);
