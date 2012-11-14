@@ -49,13 +49,19 @@ class RoverTest extends PHPUnit_Framework_TestCase {
      * @depends testRoverBScenario
      */
     
-    public function testOutOfAreaMoveControl(){
+    public function testOutOfAreaMoveControl() {
         //Rover cannot move forward 
         $this->_roverB->setCommandQueue(\MarsRover\CommandQueueFactory::build("LMMMMMM"));
         $this->_roverB->executeCommands();
         $this->assertEquals($this->_roverB->getCurrentCoordinates()->getY(), 5);
     }
 
+    
+    public function testOutOfAreaMoveControlScenario() {
+        $roverA = new \MarsRover\Rover(new \MarsRover\MarsCoordinate(1, 2), new \MarsRover\RoverStates\NorthState(), "MMMMMMMMMMMMMMMMMM", new \MarsRover\Area(5, 5));
+        $roverA->executeCommands();
+        $this->assertEquals($roverA->getCurrentCoordinates()->getY(), 5);
+    }
 
 }
 
