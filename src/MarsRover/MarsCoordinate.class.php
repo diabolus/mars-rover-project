@@ -55,7 +55,7 @@ class MarsCoordinate {
      * @param type $x
      * @param type $y
      */
-    public function __construct( $x, $y) {
+    public function __construct( $x = 0, $y = 0) {
         $this->setX($x);
         $this->setY($y);
     }

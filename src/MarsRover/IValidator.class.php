@@ -6,7 +6,7 @@ interface IValidator {
 
     /**
      * 
-     * @param $value
+     * @param \MarsRover\MarsCoordinate $value
      */
     public function isValid(\MarsRover\MarsCoordinate $value);
 }
