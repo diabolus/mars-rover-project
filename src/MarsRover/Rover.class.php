@@ -24,6 +24,7 @@ class Rover {
     private $__directionState;
     private $__commandQueue;
     private $__validator;
+    private $__currentCoordinates;
     private $__roverStatus = self::ROVER_NOT_LANDED;
    
 
@@ -46,8 +47,8 @@ class Rover {
     /**
      * Landing function to destination Coordinates on area
      * 
-     * @param type $__x
-     * @param type $__y
+     * @param type $landingCoor
+     * @throws \LogicException
      * @throws \OutOfRangeException
      */
     private function __landRover($landingCoor){
@@ -56,40 +57,32 @@ class Rover {
             throw new \LogicException(sprintf("Rover has already landed!!!"));
             
         if ( $this->__validator->isValid($landingCoor)) {
-            $this->setX($landingCoor->getX());
-            $this->setY($landingCoor->getY());
-            // Rover has landed successfully
+            
+            //Rover has landed
+            $this->setCurrentCoordinates($landingCoor);
             $this->setRoverStatus(self::ROVER_LANDED);
+            
+            
         } else {
             throw new \OutOfRangeException(sprintf("[%d,%d] landing destination is out of area", $landingCoor->getX(), $landingCoor->getY()));
         }
     }
-
     /**
      * 
      * @return type
      */
-    public function getX() {
-        return $this->__x;
+    public function getCurrentCoordinates() {
+        return $this->__currentCoordinates;
     }
-
     /**
      * 
-     * @param type $__x
+     * @param \MarsRover\MarsCoordinate $__currentCoordinates
      */
-    public function setX($__x) {
-        $this->__x = $__x;
+    public function setCurrentCoordinates(\MarsRover\MarsCoordinate $__currentCoordinates) {
+        $this->__currentCoordinates = $__currentCoordinates;
     }
 
-    /**
-     * 
-     * @return type
-     */
-    public function getY() {
-        return $this->__y;
-    }
-
-    /**
+        /**
      * 
      * @return type
      */
@@ -111,14 +104,6 @@ class Rover {
      */
     public function setCommandQueue($__commandQueue) {
         $this->__commandQueue = $__commandQueue;
-    }
-
-    /**
-     * 
-     * @param type $__y
-     */
-    public function setY($__y) {
-        $this->__y = $__y;
     }
 
     /**
@@ -158,7 +143,7 @@ class Rover {
      * @return type
      */
     public function reportCurrentCoordinates() {
-        return sprintf('Current Coordinates : %d-%d ', $this->getX(), $this->getY());
+        return sprintf('Current Coordinates : %d-%d ', $this->getCurrentCoordinates()->getX(), $this->getCurrentCoordinates()->getY());
     }
 
     /**
@@ -166,7 +151,7 @@ class Rover {
      * @return type
      */
     public function reportCurrentHeadingDirection() {
-        return sprintf('Current Heading Direction : %s ', $this->getDirectionState());
+        return sprintf('Current Heading Direction : %s ', (string) $this->getDirectionState());
     }
 
     public function calculateDestinationCoordinates(){
@@ -176,8 +161,7 @@ class Rover {
     public function moveForward() {
         $destCoor = $this->calculateDestinationCoordinates();
         if ( $this->__validator->isValid($destCoor)){
-            $this->setX($destCoor->getX());
-            $this->setY($destCoor->getY());
+            $this->setCurrentCoordinates($destCoor);
         } 
         // in else case rover ignore the invalid command 
     }
